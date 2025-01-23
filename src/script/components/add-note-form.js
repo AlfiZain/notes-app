@@ -25,7 +25,6 @@ class AddNoteForm extends HTMLElement {
         font-size: 1rem;
         box-sizing: border-box;
         font-family: inherit;
-        font-size: 1rem;
       }
       textarea {
         resize: vertical;
@@ -37,7 +36,7 @@ class AddNoteForm extends HTMLElement {
         font-size: 0.75rem;
         color: #666666;
       }
-      .form-group.btn-group{
+      .form-group.btn-group {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
@@ -54,18 +53,23 @@ class AddNoteForm extends HTMLElement {
       }
       .submit-btn {
         color: white;
-        background: #008bff;
+        background: #28a745;
       }
       .submit-btn:hover {
-        background: #005bff;
+        background: #218838;
       }
-        .cancel-btn {
-          color: white;
-          background: #ff2222;
+      .cancel-btn {
+        color: white;
+        background: #ff2222;
+      }
+      .cancel-btn:hover {
+        background: #dd0000;
+      }
+      @media screen and (max-width: 480px) {
+        button {
+          max-width: 320px;
         }
-        .cancel-btn:hover {
-          background: #dd0000;
-        }
+      }
     `;
   }
 

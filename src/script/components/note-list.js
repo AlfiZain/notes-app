@@ -27,7 +27,7 @@ class NoteList extends HTMLElement {
       .large {
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       }
-      .section-title {
+      .section-title h2 {
         margin: 0;
       }
       .option-container {
@@ -61,6 +61,18 @@ class NoteList extends HTMLElement {
         border: 1px solid #cccccc;
         border-radius: 5px;
       }
+      /* Media query untuk laptop */
+      @media screen and (max-width: 1000px) {
+        .section-title {
+          position: sticky;
+          top: 0;
+          left: 0;
+          background: #ffffff;
+          margin-inline: -1rem;
+          padding: 1rem;
+          z-index: 999;
+        }
+      }
     `;
   }
 
@@ -82,7 +94,9 @@ class NoteList extends HTMLElement {
     this._updateStyle();
     this._shadowRoot.appendChild(this._style);
     this._shadowRoot.innerHTML += `
-      <h2 class="section-title">All Notes</h2>
+      <div class="section-title">
+        <h2>All Notes</h2>
+      </div>
       <div class="option-container">
         <button class="add-note-btn">+ Add Note</button>
         <div class="grid-option-container">

@@ -7,4 +7,12 @@
 
 body {
   font-family: "Roboto", sans-serif;
+  font-size: 100%;
+}
+
+/* Media query untuk mobile */
+@media screen and (max-width: 480px) {
+  body {
+    font-size: 90%;
+  }
 }
