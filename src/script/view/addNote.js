@@ -44,8 +44,7 @@ const addNote = (notesData) => {
       };
       notesData.push(newNote);
       window.alert(`Note ${titleValue} successfully added`);
-      titleInput.value = "";
-      bodyTextArea.value = "";
+      event.target.reset();
     }
 
     home();
@@ -66,25 +65,16 @@ const addNote = (notesData) => {
     return true;
   };
 
-  titleInput.addEventListener("blur", function () {
+  titleInput.addEventListener("input", function () {
     isValid(this, titleHelp);
   });
 
-  bodyTextArea.addEventListener("blur", function () {
-    isValid(this, bodyHelp);
-  });
-
-  titleInput.addEventListener("change", function () {
-    isValid(this, titleHelp);
-  });
-
-  bodyTextArea.addEventListener("change", function () {
+  bodyTextArea.addEventListener("input", function () {
     isValid(this, bodyHelp);
   });
 
   cancelButton.addEventListener("click", () => {
-    titleInput.value = "";
-    bodyTextArea.value = "";
+    form.reset();
     home();
   });
   resetHelpText();
