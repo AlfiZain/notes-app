@@ -7,6 +7,9 @@ class AddNoteForm extends HTMLElement {
 
   _updateStyle() {
     this._style.textContent = `
+      :host {
+        display: none;
+      }
       .section-title {
         margin: 0 0 1rem 0;
       }

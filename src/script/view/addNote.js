@@ -1,6 +1,7 @@
+import NotesApi from "../data/remote/notes-api.js";
 import home from "./home.js";
 
-const addNote = (notesData) => {
+const addNote = () => {
   const addNoteFormElement = document.querySelector("add-note-form");
   const shadowRoot = addNoteFormElement.shadowRoot;
 
@@ -21,32 +22,28 @@ const addNote = (notesData) => {
     bodyHelp.style.color = "#666666";
   };
 
+  const createNote = async (newNote) => {
+    try {
+      const message = await NotesApi.createNote(newNote);
+      window.alert(message);
+    } catch (error) {
+      alert(error);
+    }
+  };
+
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    const titleValid = isValid(titleInput, titleHelp);
-    const bodyValid = isValid(bodyTextArea, bodyHelp);
-    if (titleValid && bodyValid) {
-      const titleValue = titleInput.value.trim();
-      const bodyValue = bodyTextArea.value.trim();
+    const newNote = {
+      title: titleInput.value.trim(),
+      body: bodyTextArea.value.trim(),
+    };
 
-      const generateNoteId = () => {
-        const replacedSpace = titleValue.replace(/\s+/g, "-").toLowerCase().substring(0, 7);
-        const randomNumber = Math.random().toString(10).substring(2, 10);
-        return `${replacedSpace}-${randomNumber}`;
-      };
-
-      const newNote = {
-        id: generateNoteId(),
-        title: titleValue,
-        body: bodyValue,
-        createdAt: new Date().toISOString(),
-        archived: false,
-      };
-      notesData.push(newNote);
-      window.alert(`Note ${titleValue} successfully added`);
-      event.target.reset();
+    if (!isValid(titleInput, titleHelp) || !isValid(bodyTextArea, bodyHelp)) {
+      return;
     }
 
+    createNote(newNote);
+    event.target.reset();
     home();
   });
 

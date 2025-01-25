@@ -1,26 +1,120 @@
 import Utils from "../utils.js";
-import notesData from "../data/notes.js";
 import addNote from "./addNote.js";
+import NotesApi from "../data/remote/notes-api.js";
 
 const home = () => {
   const noteListElement = document.querySelector("note-list");
   const shadowRoot = noteListElement.shadowRoot;
+  const listElement = shadowRoot.querySelector(".list");
 
   const addNoteFormElement = document.querySelector("add-note-form");
   const addNoteButtonElement = shadowRoot.querySelector(".add-note-btn");
+  const searchBarElement = shadowRoot.querySelector("search-bar");
+  const archivedButtonElement = shadowRoot.querySelector(".archived-btn");
+  const allNotesButtonElement = shadowRoot.querySelector(".all-notes-btn");
   const gridOptionElement = shadowRoot.querySelector("#grid-option");
   gridOptionElement.value = noteListElement.getAttribute("grid-size");
 
-  const displayNotes = (notesData) => {
-    Utils.emptyElement(noteListElement);
-    const noteItemElements = notesData.map((note) => {
+  const displayNonArchivedNotes = async () => {
+    try {
+      const notes = await NotesApi.getNotes();
+      displayNotes(notes);
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  const displayArchivedNotes = async () => {
+    try {
+      const notes = await NotesApi.getArchivedNotes();
+      displayNotes(notes);
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  const displayNotes = (noteData) => {
+    Utils.emptyElement(listElement);
+    const noteItemElements = noteData.map((note) => {
       const noteItemElement = document.createElement("note-item");
       noteItemElement.note = note;
       return noteItemElement;
     });
-    Utils.showElement(noteListElement);
+
+    // Menambahkan noteItemElements ke dalam listElement
     Utils.hideElement(addNoteFormElement);
-    noteListElement.append(...noteItemElements);
+    Utils.showElement(noteListElement);
+    listElement.append(...noteItemElements);
+
+    // Mengakses note-item setelah ditambahkan ke dalam DOM
+    const noteItems = shadowRoot.querySelectorAll("note-item");
+    noteItems.forEach((noteItem) => {
+      const noteItemShadowRoot = noteItem.shadowRoot;
+      const archiveButton = noteItemShadowRoot.querySelector(".archive-btn");
+      const unarchiveButton = noteItemShadowRoot.querySelector(".unarchive-btn");
+      const deleteButton = noteItemShadowRoot.querySelector(".delete-btn");
+
+      const isArchivedPage = noteListElement.getAttribute("list-title") === "Archived Notes";
+      if (isArchivedPage) {
+        Utils.hideElement(archiveButton);
+        Utils.showFlexElement(unarchiveButton);
+      }
+
+      archiveButton.addEventListener("click", () => {
+        archiveNote(noteItem.note.id);
+      });
+      unarchiveButton.addEventListener("click", () => {
+        unarchiveNote(noteItem.note.id);
+      });
+      deleteButton.addEventListener("click", () => {
+        deleteNote(noteItem.note.id);
+      });
+    });
+  };
+
+  const displaySingleNote = async (noteId) => {
+    try {
+      const note = await NotesApi.getSingleNote(noteId);
+      // Menampilkan note sebagai array
+      displayNotes([note]);
+    } catch (error) {
+      alert("Note not found or error occurred.");
+    }
+  };
+
+  const archiveNote = async (noteId) => {
+    try {
+      const response = await NotesApi.archiveNote(noteId);
+      alert(response);
+      displayNonArchivedNotes();
+    } catch (error) {
+      alert("Note not found or error occurred.");
+    }
+  };
+
+  const unarchiveNote = async (noteId) => {
+    try {
+      const response = await NotesApi.unarchiveNote(noteId);
+      alert(response);
+      displayArchivedNotes();
+    } catch (error) {
+      alert("Note not found or error occurred.");
+    }
+  };
+
+  const deleteNote = async (noteId) => {
+    try {
+      const response = await NotesApi.deleteNote(noteId);
+      alert(response);
+      const isArchivedPage = noteListElement.getAttribute("list-title") === "Archived Notes";
+
+      if (isArchivedPage) {
+        displayArchivedNotes();
+      }
+      displayNonArchivedNotes();
+    } catch (error) {
+      alert("Note not found or error occurred.");
+    }
   };
 
   gridOptionElement.addEventListener("change", (e) => {
@@ -32,9 +126,36 @@ const home = () => {
   addNoteButtonElement.addEventListener("click", (e) => {
     Utils.showElement(addNoteFormElement);
     Utils.hideElement(noteListElement);
-    addNote(notesData);
+    addNote();
   });
-  displayNotes(notesData);
+
+  searchBarElement.addEventListener("search", (e) => {
+    console.log(e.detail);
+    const { query } = e.detail;
+    if (query) {
+      displaySingleNote(query);
+      searchBarElement.shadowRoot.querySelector("input#name").value = "";
+      noteListElement.setAttribute("list-title", `Note ID : ${query}`);
+      Utils.hideElement(archivedButtonElement);
+      Utils.showFlexElement(allNotesButtonElement);
+    }
+  });
+
+  archivedButtonElement.addEventListener("click", () => {
+    displayArchivedNotes();
+    noteListElement.setAttribute("list-title", "Archived Notes");
+    Utils.hideElement(archivedButtonElement);
+    Utils.showFlexElement(allNotesButtonElement);
+  });
+
+  allNotesButtonElement.addEventListener("click", () => {
+    displayNonArchivedNotes();
+    noteListElement.setAttribute("list-title", "All Notes");
+    Utils.hideElement(allNotesButtonElement);
+    Utils.showFlexElement(archivedButtonElement);
+  });
+
+  displayNonArchivedNotes();
 };
 
 export default home;

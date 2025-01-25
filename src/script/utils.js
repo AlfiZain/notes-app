@@ -4,6 +4,11 @@ class Utils {
     element.hidden = false;
   }
 
+  static showFlexElement(element) {
+    element.style.display = "flex";
+    element.hidden = false;
+  }
+
   static hideElement(element) {
     element.style.display = "none";
     element.hidden = true;
