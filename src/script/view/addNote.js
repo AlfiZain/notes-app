@@ -1,7 +1,7 @@
 import NotesApi from "../data/remote/notes-api.js";
 import home from "./home.js";
 
-const addNote = () => {
+const addNote = (onComplete) => {
   const addNoteFormElement = document.querySelector("add-note-form");
   const shadowRoot = addNoteFormElement.shadowRoot;
 
@@ -26,6 +26,7 @@ const addNote = () => {
     try {
       const message = await NotesApi.createNote(newNote);
       window.alert(message);
+      if (onComplete) onComplete();
     } catch (error) {
       alert(error);
     }
@@ -44,7 +45,6 @@ const addNote = () => {
 
     createNote(newNote);
     event.target.reset();
-    home();
   });
 
   const isValid = (inputElement, helpElement) => {
@@ -72,7 +72,7 @@ const addNote = () => {
 
   cancelButton.addEventListener("click", () => {
     form.reset();
-    home();
+    if (onComplete) onComplete();
   });
   resetHelpText();
 };

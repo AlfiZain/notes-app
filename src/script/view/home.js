@@ -6,6 +6,7 @@ const home = () => {
   const noteListElement = document.querySelector("note-list");
   const shadowRoot = noteListElement.shadowRoot;
   const listElement = shadowRoot.querySelector(".list");
+  const isArchivedPage = noteListElement.getAttribute("list-title") === "Archived Notes";
 
   const addNoteFormElement = document.querySelector("add-note-form");
   const addNoteButtonElement = shadowRoot.querySelector(".add-note-btn");
@@ -18,7 +19,11 @@ const home = () => {
   const displayNonArchivedNotes = async () => {
     try {
       const notes = await NotesApi.getNotes();
+      noteListElement.setAttribute("list-title", "All Notes");
       displayNotes(notes);
+
+      Utils.hideElement(allNotesButtonElement);
+      Utils.showFlexElement(archivedButtonElement);
     } catch (error) {
       alert(error);
     }
@@ -27,9 +32,23 @@ const home = () => {
   const displayArchivedNotes = async () => {
     try {
       const notes = await NotesApi.getArchivedNotes();
+      noteListElement.setAttribute("list-title", "Archived Notes");
       displayNotes(notes);
+
+      Utils.hideElement(archivedButtonElement);
+      Utils.showFlexElement(allNotesButtonElement);
     } catch (error) {
       alert(error);
+    }
+  };
+
+  const displaySingleNote = async (noteId) => {
+    try {
+      const note = await NotesApi.getSingleNote(noteId);
+      // Menampilkan note sebagai array
+      displayNotes([note]);
+    } catch (error) {
+      alert("Note not found or error occurred.");
     }
   };
 
@@ -72,16 +91,6 @@ const home = () => {
     });
   };
 
-  const displaySingleNote = async (noteId) => {
-    try {
-      const note = await NotesApi.getSingleNote(noteId);
-      // Menampilkan note sebagai array
-      displayNotes([note]);
-    } catch (error) {
-      alert("Note not found or error occurred.");
-    }
-  };
-
   const archiveNote = async (noteId) => {
     try {
       const response = await NotesApi.archiveNote(noteId);
@@ -107,11 +116,11 @@ const home = () => {
       const response = await NotesApi.deleteNote(noteId);
       alert(response);
       const isArchivedPage = noteListElement.getAttribute("list-title") === "Archived Notes";
-
       if (isArchivedPage) {
         displayArchivedNotes();
+      } else {
+        displayNonArchivedNotes();
       }
-      displayNonArchivedNotes();
     } catch (error) {
       alert("Note not found or error occurred.");
     }
@@ -126,11 +135,19 @@ const home = () => {
   addNoteButtonElement.addEventListener("click", (e) => {
     Utils.showElement(addNoteFormElement);
     Utils.hideElement(noteListElement);
-    addNote();
+    addNote(() => {
+      const isArchivedPage = noteListElement.getAttribute("list-title") === "Archived Notes";
+      if (isArchivedPage) {
+        displayArchivedNotes();
+      } else {
+        displayNonArchivedNotes();
+      }
+    });
   });
 
   searchBarElement.addEventListener("search", (e) => {
     const { query } = e.detail;
+    console.log("search dipanggil");
     if (query) {
       displaySingleNote(query);
       searchBarElement.shadowRoot.querySelector("input#name").value = "";
@@ -142,19 +159,17 @@ const home = () => {
 
   archivedButtonElement.addEventListener("click", () => {
     displayArchivedNotes();
-    noteListElement.setAttribute("list-title", "Archived Notes");
-    Utils.hideElement(archivedButtonElement);
-    Utils.showFlexElement(allNotesButtonElement);
   });
 
   allNotesButtonElement.addEventListener("click", () => {
     displayNonArchivedNotes();
-    noteListElement.setAttribute("list-title", "All Notes");
-    Utils.hideElement(allNotesButtonElement);
-    Utils.showFlexElement(archivedButtonElement);
   });
 
-  displayNonArchivedNotes();
+  if (isArchivedPage) {
+    displayArchivedNotes();
+  } else {
+    displayNonArchivedNotes();
+  }
 };
 
 export default home;
