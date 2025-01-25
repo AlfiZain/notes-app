@@ -130,7 +130,6 @@ const home = () => {
   });
 
   searchBarElement.addEventListener("search", (e) => {
-    console.log(e.detail);
     const { query } = e.detail;
     if (query) {
       displaySingleNote(query);
