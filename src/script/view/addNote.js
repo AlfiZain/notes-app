@@ -32,7 +32,12 @@ const addNote = (onComplete) => {
       Swal.fire('Success', message, 'success');
       if (onComplete) onComplete();
     } catch (error) {
-      Swal.fire('Error', error.message, 'error');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to save, check your internet connection',
+        draggable: true,
+      });
     } finally {
       Utils.hideLoading(loadingElement);
     }
