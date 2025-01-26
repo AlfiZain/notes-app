@@ -1,8 +1,8 @@
 class AddNoteForm extends HTMLElement {
   constructor() {
     super();
-    this._shadowRoot = this.attachShadow({ mode: "open" });
-    this._style = document.createElement("style");
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
+    this._style = document.createElement('style');
   }
 
   _updateStyle() {
@@ -68,6 +68,19 @@ class AddNoteForm extends HTMLElement {
       .cancel-btn:hover {
         background: #dd0000;
       }
+      #loading-indicator {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        z-index: 1000;
+      }
       @media screen and (max-width: 480px) {
         button {
           max-width: 320px;
@@ -77,7 +90,7 @@ class AddNoteForm extends HTMLElement {
   }
 
   _emptyContent() {
-    this._shadowRoot.innerHTML = "";
+    this._shadowRoot.innerHTML = '';
   }
 
   connectedCallback() {
@@ -123,8 +136,9 @@ class AddNoteForm extends HTMLElement {
           <button type="button" class="cancel-btn">Cancel</button>
         </div>
       </form>
+      <div id="loading-indicator">Loading...</div>
     `;
   }
 }
 
-customElements.define("add-note-form", AddNoteForm);
+customElements.define('add-note-form', AddNoteForm);

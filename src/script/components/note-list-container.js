@@ -4,8 +4,8 @@ class NoteListContainer extends HTMLElement {
 
   constructor() {
     super();
-    this._shadowRoot = this.attachShadow({ mode: "open" });
-    this._style = document.createElement("style");
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
+    this._style = document.createElement('style');
 
     this.render();
   }
@@ -29,7 +29,7 @@ class NoteListContainer extends HTMLElement {
   }
 
   _emptyContent() {
-    this._shadowRoot.innerHTML = "";
+    this._shadowRoot.innerHTML = '';
   }
 
   render() {
@@ -45,4 +45,4 @@ class NoteListContainer extends HTMLElement {
   }
 }
 
-customElements.define("note-list-container", NoteListContainer);
+customElements.define('note-list-container', NoteListContainer);

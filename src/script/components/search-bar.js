@@ -2,44 +2,48 @@ class SearchBar extends HTMLElement {
   _shadowRoot = null;
   _style = null;
 
-  _submitEvent = "submit";
-  _searchEvent = "search";
+  _submitEvent = 'submit';
+  _searchEvent = 'search';
 
   constructor() {
     super();
-    this._shadowRoot = this.attachShadow({ mode: "open" });
-    this._style = document.createElement("style");
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
+    this._style = document.createElement('style');
     this.render();
   }
 
   _emptyContent() {
-    this._shadowRoot.innerHTML = "";
+    this._shadowRoot.innerHTML = '';
   }
 
   connectedCallback() {
-    this._shadowRoot.querySelector("form").addEventListener("submit", (e) => this._onFormSubmit(e, this));
+    this._shadowRoot
+      .querySelector('form')
+      .addEventListener('submit', (e) => this._onFormSubmit(e, this));
     this.addEventListener(this._submitEvent, this._onSearchBarSubmit);
   }
 
   disconnectedCallback() {
-    this._shadowRoot.querySelector("form").removeEventListener("submit", (e) => this._onFormSubmit(e, this));
+    this._shadowRoot
+      .querySelector('form')
+      .removeEventListener('submit', (e) => this._onFormSubmit(e, this));
     this.removeEventListener(this._submitEvent, this._onSearchBarSubmit);
   }
 
   _onFormSubmit(e, searchBarInstance) {
-    searchBarInstance.dispatchEvent(new CustomEvent("submit"));
+    searchBarInstance.dispatchEvent(new CustomEvent('submit'));
     e.preventDefault();
   }
 
   _onSearchBarSubmit() {
-    const query = this._shadowRoot.querySelector("input#name").value;
+    const query = this._shadowRoot.querySelector('input#name').value;
     if (!query) return;
 
     this.dispatchEvent(
       new CustomEvent(this._searchEvent, {
         detail: { query },
         bubbles: true,
-      })
+      }),
     );
   }
 
@@ -146,4 +150,4 @@ class SearchBar extends HTMLElement {
   }
 }
 
-customElements.define("search-bar", SearchBar);
+customElements.define('search-bar', SearchBar);

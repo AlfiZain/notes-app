@@ -1,16 +1,20 @@
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
+
 class NoteList extends HTMLElement {
-  static observedAttributes = ["list-title", "grid-size"];
+  static observedAttributes = ['list-title', 'grid-size'];
 
   _shadowRoot = null;
   _style = null;
 
   constructor() {
     super();
-    this._gridSize = this.getAttribute("grid-size");
-    this._listTitle = this.getAttribute("list-title");
+    this._gridSize = this.getAttribute('grid-size');
+    this._listTitle = this.getAttribute('list-title');
 
-    this._shadowRoot = this.attachShadow({ mode: "open" });
-    this._style = document.createElement("style");
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
+    this._style = document.createElement('style');
+    gsap.registerPlugin(ScrollTrigger);
   }
 
   _updateStyle() {
@@ -115,6 +119,19 @@ class NoteList extends HTMLElement {
         height: 15px;
         color: inherit;
       }
+      #loading-indicator {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        z-index: 1000;
+      }
       @media screen and (max-width: 1000px) {
         .section-title {
           position: sticky;
@@ -135,18 +152,37 @@ class NoteList extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === "grid-size") {
+    if (name === 'grid-size') {
       this._gridSize = newValue;
       this._updateGrid();
+      const noteItemElements = this._shadowRoot.querySelectorAll('note-item');
+      noteItemElements.forEach((noteItem) => {
+        gsap.fromTo(
+          noteItem,
+          { opacity: 0.1, scale: 0.3 },
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 1,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: noteItem,
+              start: 'top 90%',
+              end: 'top 50%',
+              toggleActions: 'play none none none',
+            },
+          },
+        );
+      });
     }
-    if (name === "list-title") {
+    if (name === 'list-title') {
       this._listTitle = newValue;
       this._updateTitle();
     }
   }
 
   _emptyContent() {
-    this._shadowRoot.innerHTML = "";
+    this._shadowRoot.innerHTML = '';
   }
 
   connectedCallback() {
@@ -188,6 +224,7 @@ class NoteList extends HTMLElement {
         </svg>
         All Notes
       </button>
+      <div id="loading-indicator">Loading...</div>
       <div class="list ${this._gridSize}">
         
       </div>
@@ -195,18 +232,18 @@ class NoteList extends HTMLElement {
   }
 
   _updateGrid() {
-    const listElement = this._shadowRoot.querySelector(".list");
+    const listElement = this._shadowRoot.querySelector('.list');
     if (listElement) {
       listElement.className = `list ${this._gridSize}`;
     }
   }
 
   _updateTitle() {
-    const listTitle = this._shadowRoot.querySelector(".section-title h2");
+    const listTitle = this._shadowRoot.querySelector('.section-title h2');
     if (listTitle) {
       listTitle.innerText = this._listTitle;
     }
   }
 }
 
-customElements.define("note-list", NoteList);
+customElements.define('note-list', NoteList);
