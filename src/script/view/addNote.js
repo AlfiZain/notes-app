@@ -71,6 +71,12 @@ const addNote = (onComplete) => {
     };
 
     if (!isValid(titleInput, titleHelp) || !isValid(bodyTextArea, bodyHelp)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'The input you entered is invalid',
+        draggable: true,
+      });
       return;
     }
 
@@ -94,7 +100,6 @@ const addNote = (onComplete) => {
   });
 
   resetHelpText();
-  Utils.appearAnimation(addNoteFormElement);
 };
 
 export default addNote;

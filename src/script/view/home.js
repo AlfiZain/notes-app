@@ -227,6 +227,16 @@ const home = () => {
     }
   };
 
+  addNote(() => {
+    const isArchivedPage =
+      noteListElement.getAttribute('list-title') === 'Archived Notes';
+    if (isArchivedPage) {
+      displayArchivedNotes();
+    } else {
+      displayNonArchivedNotes();
+    }
+  });
+
   gridOptionElement.addEventListener('change', (e) => {
     const newSize = e.target.value;
     gridOptionElement.value = newSize;
@@ -236,15 +246,7 @@ const home = () => {
   addNoteButtonElement.addEventListener('click', () => {
     Utils.showElement(addNoteFormElement);
     Utils.hideElement(noteListElement);
-    addNote(() => {
-      const isArchivedPage =
-        noteListElement.getAttribute('list-title') === 'Archived Notes';
-      if (isArchivedPage) {
-        displayArchivedNotes();
-      } else {
-        displayNonArchivedNotes();
-      }
-    });
+    Utils.appearAnimation(addNoteFormElement);
   });
 
   searchBarElement.addEventListener('search', (e) => {
